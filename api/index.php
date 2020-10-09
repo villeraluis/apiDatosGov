@@ -4,6 +4,7 @@ include_once("../php/conexion.php");
 
 
 
+
 // Mostrarmos los errores en pantalla
 // Se deben desactivar en modo producción. Deben estar activos en tiempo de desarrollo
 ini_set('display_errors', 1);
@@ -23,54 +24,15 @@ $url = $_SERVER['REQUEST_URI'];
 
 
 
-// 1. READ   GET /tickets/
-//    Se hace uso de expresiones regulares con preg_match() para buscar el patron /tickets/x
-//    Donde la x sea cualquier valor numérico mayor o igual a 1 y hasta 15 cifras
-//    Se valida que el método HTTP sea GET
-//
-
-  if(preg_match("/tickets\/([1-9][0-9]{0,15})/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'GET'){ 
-   
-
-    
-    
-
-      $id = $matches[1];
-    $sentencia = $conexionBd->prepare("SELECT id FROM tickets WHERE id = ? LIMIT 1;");
-    $sentencia->execute([$id]);
-    $numeroDeFilas = $sentencia->rowCount();
-
-    if ($numeroDeFilas == 1) {
-      $consulta = $conexionBd->prepare("SELECT tickets.id,tickets.nombres,
-      tickets.id_dependencia,dependencia.nombre_dependencia,tickets.id_tipo,tipo.nombre_tipo,tickets.apellidos,
-      tickets.email,tickets.asunto, tickets.descripcion,tickets.fecha 
-      FROM tickets,dependencia,tipo 
-      WHERE tickets.id_tipo=tipo.id_tipo && tickets.id_dependencia=dependencia.id_dependencia && tickets.id=$id");
-      $consulta->bindValue(':id', $id);
-      $consulta->execute();
-      $validacion=$consulta->fetch(PDO::FETCH_ASSOC);
-      
-      echo json_encode($validacion);
-        //header("HTTP/1.1 200 OK");
-      
-    }else {
-      $resp=array("success" =>"el ticket  $id no se encuentra" );
-      echo json_encode($resp);
-  }
-      
-  
-  exit();
-   
-}
+// 1. READ   
 
 
-// listar todos los tikets
-// 2. LIST   GET /tikets
+// listar todos los casos
+// 2. LIST   GET /casos
 
 //
- if($url == '/api/tickets' && $_SERVER['REQUEST_METHOD'] == 'GET') {
-    $consulta = $conexionBd->prepare("SELECT tickets.id,tickets.nombres, dependencia.nombre_dependencia,tipo.nombre_tipo,tickets.apellidos, tickets.email,tickets.asunto, tickets.descripcion,tickets.fecha FROM tickets,dependencia,tipo
-    WHERE tickets.id_tipo=tipo.id_tipo && tickets.id_dependencia=dependencia.id_dependencia ORDER BY id");
+ if($url == '/api/casos' && $_SERVER['REQUEST_METHOD'] == 'GET') {
+    $consulta = $conexionBd->prepare("SELECT * FROM datos");
     $consulta->execute();
     $consulta->setFetchMode(PDO::FETCH_ASSOC);
     
@@ -80,114 +42,31 @@ $url = $_SERVER['REQUEST_URI'];
   exit();}
     
 
-// 3. CREATE  POST /tickets
-//   crea un nuevo tickets en la base de datos con datos recibidos por POST
+// 3. CREATE  
+// trae los datos de la api externa e  inserta los datos en la base de datos con datos recibidos por POST
 //if($url == '/tickets' && $_SERVER['REQUEST_METHOD'] == 'POST') {
 
-  if( $url == '/api/tickets' && $_SERVER['REQUEST_METHOD'] == 'POST') {
+  if( $url == '/api/insert' && $_SERVER['REQUEST_METHOD'] == 'POST') {
            
-     if ($_POST['nombres']!="") {
-   // la variable input toma los valores que trae $_POST
-    
-   $input = $_POST;
- 
-    $consulta = "INSERT INTO tickets ( nombres,apellidos, email, asunto,descripcion,id_tipo,id_dependencia,fecha)
-          VALUES(:nombres, :apellidos, :email, :asunto , :descripcion,:id_tipo,:id_dependencia, :fecha)";
-    $sentencia = $conexionBd->prepare($consulta); 
-    enlazarValores($sentencia, $input);
-    $sentencia->execute();
-    $postId = $conexionBd->lastInsertId();
-    if($postId)
-    {
-      $input['id'] = $postId;
-      header("HTTP/1.1 200 OK");
-      echo json_encode($input);
+    obtenciondatos();
       
-	 }  
-
-    
-     } 
-  else {
-    $resp=array("success" =>"el usuario   ya esta registrado" );
-          echo json_encode($resp);
-          //header("HTTP/1.1 200 OK");
 }
 
 
 
     
-   }
+   
 
 
- // borrar un tickets por id .DELETE
- if (preg_match("/tickets\/([1-9][0-9]{0,15})/", $url, $matches) && $_SERVER['REQUEST_METHOD'] ==  'DELETE')
-  {
-
-    
-      //estas lineas consultan si al menos una tiene la id que se intenta registrar valida que un estu
-      //diante esta registrad
-    //print_r ($matches[1]);
-    $id = $matches[1];
-    $sentencia = $conexionBd->prepare("SELECT id FROM tickets WHERE id = ? LIMIT 1;");
-    $sentencia->execute([$id]);
-    $numeroDeFilas = $sentencia->rowCount();
-
-    if ($numeroDeFilas == 1) { 
-     $sentencia = $conexionBd->prepare("DELETE FROM tickets where id=:id");
-     $sentencia->bindValue(':id', $id);
-     $sentencia->execute();
-    
-     $resp=array("success" =>"el ticket  $id se elimino satisfactoriamente" );
-
-     echo json_encode($resp);
-     header("HTTP/1.1 200 OK");
-     
-    }
-
-    }
+ 
 
    
 
 
-    // modificar un tickets UPDATE con el metodo PATH
-
-    if (preg_match("/tickets\/([1-9][0-9]{0,15})/", $url, $matches) && $_SERVER['REQUEST_METHOD'] ==  'PATCH')
-    {
-     
-        $id = $matches[1];
-        $sentencia = $conexionBd->prepare("SELECT id FROM tickets WHERE id = ? LIMIT 1;");
-        $sentencia->execute([$id]);
-        $numeroDeFilas = $sentencia->rowCount();
-        
-        if ($numeroDeFilas == 1) { 
-           if(empty($_GET)){
-            echo "no hay variables para cambiar escribalas en la url";
-            
-           }else{    
-            $input = $_GET;
-            $fields = obtenerParams($input);
-            $consulta = " UPDATE tickets SET $fields WHERE id ='$id' ";
-            $sentencia = $conexionBd->prepare($consulta);
-            enlazarValores($sentencia, $input);
-            $sentencia->execute();
-            $consulta = $conexionBd->prepare("SELECT * FROM tikets where id=:id");
-            $consulta->bindValue(':id', $id);
-            $consulta->execute();      
-            echo json_encode(  $consulta->fetch(PDO::FETCH_ASSOC)  );      
-            header("HTTP/1.1 200 OK"); 
-                  
-             }
-            }else {
-                $resp=array("success" =>"el usuario  $id no se encuentra" );
-                echo json_encode($resp);
-                }
-
-        
-    }
  
 //esta funcion permite realizar varios metodos de busquedas
 
-    if(preg_match("/tickets\/([1-9][0-9]{0,15})/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'OPTIONS'){ 
+    if(preg_match("/pacientes\/([1-9][0-9]{0,15})/", $url, $matches) && $_SERVER['REQUEST_METHOD'] == 'OPTIONS'){ 
       $input = $_GET["dato"];
       $id = $matches[1];
 
@@ -263,5 +142,96 @@ function obtenerParams($input)
                $sentencia->bindValue(':'.$param, $value);
        }
        return $sentencia;
+  }
+  
+//esta funcion seconecta con la api externa y guarda los datos en la base local
+  function obtenciondatos(){
+   
+    $headers = array(
+      'Accept: application/json',
+      'Content-type: application/json',
+      "X-App-Token: " . 'SRCTIinLUBDwFfewx64V6JFJb'
+      );
+      
+      $cliente =
+      curl_init(
+      "https://www.datos.gov.co/resource/gt2j-8ykr.json?departamento=C%C3%B3rdoba&\$limit=100");
+      curl_setopt($cliente, CURLOPT_HTTPHEADER, $headers);
+      curl_setopt($cliente, CURLOPT_RETURNTRANSFER, true);
+
+      $response = curl_exec($cliente);
+
+
+      
+      print_r("Total de Registros obtenidos: ".($response));
+
+      $datospaciente = json_decode($response, true);
+
+      foreach ($datospaciente as $paciente) {
+
+       // print_r($paciente);
+         if(!array_key_exists('fis', $paciente)){
+          $paciente['fis']= null;
+         }
+         if(!array_key_exists('fecha_de_muerte', $paciente)){
+          $paciente['fecha_de_muerte']= null;
+         }
+         if(!array_key_exists('pa_s_de_procedencia', $paciente)){
+          $paciente['pa_s_de_procedencia']= null;
+         }
+         if(!array_key_exists('codigo_pais', $paciente)){
+          $paciente['codigo_pais']= null;
+         }
+         if(!array_key_exists('pertenencia_etnica', $paciente)){
+          $paciente['pertenencia_etnica']=null;
+         }
+         if(!array_key_exists('nombre_grupo_etnico', $paciente)){
+          $paciente['nombre_grupo_etnico']= null;
+         }
+         if(!array_key_exists('fecha_recuperado', $paciente)){
+          $paciente['fecha_recuperado']= null;
+         }
+         if(!array_key_exists('tipo_recuperaci_n', $paciente)){
+          $paciente['tipo_recuperaci_n']= null;
+         }
+
+      //TRUNCATE TABLE datos
+
+         $query = $conexionBd->prepare("INSERT INTO 
+         datos ( id_de_caso,fecha_de_notificaci_n,c_digo_divipola,
+        ciudad_de_ubicaci_n,departamento,atenci_n,edad,sexo,tipo,estado,pa_s_de_procedencia,
+        fis,fecha_de_muerte,fecha_diagnostico,fecha_recuperado,fecha_reporte_web,tipo_recuperaci_n,
+        codigo_departamento,codigo_pais,pertenencia_etnica,nombre_grupo_etnico,ubicaci_n_recuperado)
+        VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)");  
+         $query->bindParam(1, $paciente['id_de_caso'], PDO::PARAM_STR);
+         $query->bindParam(2, $paciente['fecha_de_notificaci_n'], PDO::PARAM_STR);
+         $query->bindParam(3, $paciente['c_digo_divipola'], PDO::PARAM_STR);
+         $query->bindParam(4, $paciente['ciudad_de_ubicaci_n'], PDO::PARAM_STR);
+         $query->bindParam(5, $paciente['departamento'], PDO::PARAM_STR);
+         $query->bindParam(6, $paciente['atenci_n'], PDO::PARAM_STR);
+         $query->bindParam(7, $paciente['edad'], PDO::PARAM_STR);
+         $query->bindParam(8, $paciente['sexo'], PDO::PARAM_STR);
+         $query->bindParam(9, $paciente['tipo'], PDO::PARAM_STR);
+         $query->bindParam(10, $paciente['estado'], PDO::PARAM_STR);
+         $query->bindParam(11, $paciente['pa_s_de_procedencia'], PDO::PARAM_STR);
+         $query->bindParam(12, $paciente['fis'], PDO::PARAM_STR);
+         $query->bindParam(13, $paciente['fecha_de_muerte'], PDO::PARAM_STR);
+         $query->bindParam(14, $paciente['fecha_diagnostico'], PDO::PARAM_STR);
+         $query->bindParam(15, $paciente['fecha_recuperado'], PDO::PARAM_STR);
+         $query->bindParam(16, $paciente['fecha_reporte_web'], PDO::PARAM_STR);
+         $query->bindParam(17, $paciente['tipo_recuperaci_n'], PDO::PARAM_STR);
+         $query->bindParam(18, $paciente['codigo_departamento'], PDO::PARAM_STR);
+         $query->bindParam(19, $paciente['codigo_pais'], PDO::PARAM_STR);
+         $query->bindParam(20, $paciente['pertenencia_etnica'], PDO::PARAM_STR);
+         $query->bindParam(21, $paciente['nombre_grupo_etnico'], PDO::PARAM_STR);
+         $query->bindParam(22, $paciente['ubicaci_n_recuperado'], PDO::PARAM_STR);
+        
+
+         $query -> execute();
+
+
+                
+    }
+      
   }
 
