@@ -12,7 +12,7 @@ include_once('header.php')
  <canvas id="pie-chart" width=100%  ></canvas>
  </div> 
  <div class="col-md-6 mt-4"> 
- <div id="listarPositivos"  ></div>
+ <div id="listarPosex"  ></div>
  </div> 
 </div> 
 
