@@ -28,18 +28,18 @@ function crear() {
 
 
 
-function listar() {
+function listarPositivos() {
 
 
 
     $.ajax({
         method: "GET",
-        url: "http://localhost/api/casos",
+        url: "http://localhost/api/positivos",
        
     })
         .done(function (respuesta) {
 
-
+                
             {
 
                 $datos = $('#listarFallecidos');
@@ -48,15 +48,9 @@ function listar() {
 
 
                 $tabla = $('<table class="table table-bordered mt-4"> <thead><tr>' +
-                    '<th scope="col">Id</th>' +
-                    '<th scope="col">Dependencia</th>'
-                    + '<th scope="col">Tipo</th>' +
-                    '<th scope="col">Nombres</th>' +
-                    '<th scope="col">Apellidos</th>' +
-                    '<th scope="col">Email</th>' +
-                    '<th scope="col">Asunto</th>' +
-                    '<th scope="col">Descripcion</th>' +
-                    '<th scope="col">Fecha</th>' +
+                    '<th scope="col">Ciudad</th>' +
+                    '<th scope="col"> Casos Positivos</th>'
+                    + 
 
 
                     '</tr>' +
@@ -66,15 +60,57 @@ function listar() {
                 // hago un ciclo
                 for (var i = 0; i < respuesta.length; i++) {
                     var $tr = $('<tr></tr>');
-                    $tr.append('<td>' + respuesta[i].id_de_caso  + '</td>');
-                    $tr.append('<td>' + respuesta[i].ciudad_de_ubicaci_n + '</td>');
-                    $tr.append('<td>' + respuesta[i].fecha_de_muerte+ '</td>');
-                    $tr.append('<td>' + respuesta[i].edad + '</td>');
-                    $tr.append('<td>' + respuesta[i].sexo + '</td>');
-                    $tr.append('<td>' + respuesta[i].tipo + '</td>');
-                    $tr.append('<td>' + respuesta[i].fecha_diagnostico + '</td>');
-                    $tr.append('<td>' + respuesta[i].fecha_reporte_web + '</td>');
-                    $tr.append('<td>' + respuesta[i].atenci_n + '</td>');
+                    $tr.append('<td>' + respuesta[i].Ciudad  + '</td>');
+                    $tr.append('<td>' + respuesta[i].Cantidad+ '</td>');
+                    
+
+                    // agrego la columna tr a la tabla
+                    $tabla.append($tr);
+                }
+
+                // agrego la tabla al div 
+                $datos.append($tabla);
+            }
+
+
+
+        });
+
+}
+
+function listarRecuperados(){
+
+    $.ajax({
+        method: "GET",
+        url: "http://localhost/api/recuperados",
+       
+    })
+        .done(function (respuesta) {
+
+                
+            {
+
+                $datos = $('#listarFallecidos');
+
+                // creo la tabla y muestro los datos
+
+
+                $tabla = $('<table class="table table-bordered mt-4"> <thead><tr>' +
+                    '<th scope="col">Ciudad</th>' +
+                    '<th scope="col"> Numero de Recuperados</th>'
+                    + 
+
+
+                    '</tr>' +
+                    '</thead>' +
+                    '</table>');
+
+                // hago un ciclo
+                for (var i = 0; i < respuesta.length; i++) {
+                    var $tr = $('<tr></tr>');
+                    $tr.append('<td>' + respuesta[i].Ciudad  + '</td>');
+                    $tr.append('<td>' + respuesta[i].Cantidad+ '</td>');
+                    
 
                     // agrego la columna tr a la tabla
                     $tabla.append($tr);
@@ -91,83 +127,101 @@ function listar() {
 }
 
 
-
-
-function leer() {
-
-    var tiket_id = document.getElementById("inputIdentificacionRead").value;
+function listarFallecidos() {
 
     $.ajax({
         method: "GET",
-        url: "http://localhost/api/tickets/" + tiket_id,
-        // data: { name: "John", location: "Boston" }
+        url: "http://localhost/api/fallecidos",
+       
     })
         .done(function (respuesta) {
 
-            if (respuesta.success == null) {
+                
+            {
 
-
-                $datos = $('#listarTodos');
+                $datos = $('#listarFallecidos');
 
                 // creo la tabla y muestro los datos
 
 
                 $tabla = $('<table class="table table-bordered mt-4"> <thead><tr>' +
-                    '<th scope="col">Id</th>' +
-                    '<th scope="col">Dependencia</th>'
-                    + '<th scope="col">Tipo</th>' +
-                    '<th scope="col">Nombres</th>' +
-                    '<th scope="col">Apellidos</th>' +
-                    '<th scope="col">Email</th>' +
-                    '<th scope="col">Asunto</th>' +
-                    '<th scope="col">Descripcion</th>' +
-                    '<th scope="col">Fecha</th>' +
+                    '<th scope="col">Ciudad</th>' +
+                    '<th scope="col"> Numero de Fallecidos</th>'
+                    + 
 
 
                     '</tr>' +
                     '</thead>' +
                     '</table>');
 
+                // hago un ciclo
+                for (var i = 0; i < respuesta.length; i++) {
+                    var $tr = $('<tr></tr>');
+                    $tr.append('<td>' + respuesta[i].Ciudad  + '</td>');
+                    $tr.append('<td>' + respuesta[i].Cantidad+ '</td>');
+                    
 
-
-                var $tr = $('<tr></tr>');
-                $tr.append('<td>' + respuesta.id + '</td>');
-                $tr.append('<td>' + respuesta.nombre_dependencia + '</td>');
-                $tr.append('<td>' + respuesta.nombre_tipo + '</td>');
-                $tr.append('<td>' + respuesta.nombres + '</td>');
-                $tr.append('<td>' + respuesta.apellidos + '</td>');
-                $tr.append('<td>' + respuesta.email + '</td>');
-                $tr.append('<td>' + respuesta.asunto + '</td>');
-                $tr.append('<td>' + respuesta.descripcion + '</td>');
-                $tr.append('<td>' + respuesta.fecha + '</td>');
-
-                // agrego la columna tr a la tabla
-                $tabla.append($tr);
-
+                    // agrego la columna tr a la tabla
+                    $tabla.append($tr);
+                }
 
                 // agrego la tabla al div 
                 $datos.append($tabla);
-                if ($("#botonDelete").length) {
-                    if ($("#botonReadD").attr("disabled", true));
-                    document.getElementById("botonDelete").style.visibility = "visible";
-                    document.getElementById("botonCancel").style.visibility = "visible";
-
-                }
-            }
-            else {
-
-
-                window.alert(respuesta.success);
             }
 
 
 
         });
-    if ($("#botonRead").attr("disabled", true));
-    if ($("#botonDesabled").removeAttr("disabled", false));
 
 }
 
+function listarPositivosSx(){
+
+    $.ajax({
+        method: "GET",
+        url: "http://localhost/api/positivosex",
+       
+    })
+        .done(function (respuesta) {
+
+                
+            {
+
+                $datos = $('#listarFallecidos');
+
+                // creo la tabla y muestro los datos
+
+
+                $tabla = $('<table class="table table-bordered mt-4"> <thead><tr>' +
+                    '<th scope="col">sexo</th>' +
+                    '<th scope="col"> Numero de Casos</th>'
+                    + 
+
+
+                    '</tr>' +
+                    '</thead>' +
+                    '</table>');
+
+                // hago un ciclo
+                for (var i = 0; i < respuesta.length; i++) {
+                    var $tr = $('<tr></tr>');
+                    $tr.append('<td>' + respuesta[i].sexo + '</td>');
+                    $tr.append('<td>' + respuesta[i].Cantidad+ '</td>');
+                    
+
+                    // agrego la columna tr a la tabla
+                    $tabla.append($tr);
+                }
+
+                // agrego la tabla al div 
+                $datos.append($tabla);
+            }
+
+
+
+        });
+
+}
 
 
 
