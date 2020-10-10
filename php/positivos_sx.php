@@ -1,28 +1,30 @@
 <?php
 
-
+include_once('header.php')
 
 ?>
-<!doctype html>
-<html lang="en">
-  <head>
-    <title>Interfaz de la API</title>
-    <!-- Required meta tags -->
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
-    <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="../css/bootstrap.min.css" >
-    <link rel="stylesheet" href="../css/estilos.css" >
-  </head>
+ 
 
-<div class="container-fluid">
-<div id="listarFallecidos"></div>
-</div>
+<div class="modal-body row"> 
+ <div class="col-md-6"> 
+ 
+ <canvas id="pie-chart" width=100%  ></canvas>
+ </div> 
+ <div class="col-md-6 mt-4"> 
+ <div id="listarPositivos"  ></div>
+ </div> 
+</div> 
 
-<script src="../js/jquery.min.js"></script>
-    <script src="../js/popper.min.js" ></script>
-    <script src="../js/bootstrap.min.js" ></script>
-    <script src="../js/funciones.js" ></script>
+
+   
+
+
+<?php
+include_once('footer.php')
+?>
+
+    
 
 <script>window.onload = listarPositivosSx();</script>
+

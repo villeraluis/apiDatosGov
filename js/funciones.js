@@ -25,6 +25,20 @@ function crear() {
 }
 
 
+function generarLetra(){
+	var letras = ["a","b","c","d","e","f","0","1","2","3","4","5","6","7","8","9"];
+	var numero = (Math.random()*15).toFixed(0);
+	return letras[numero];
+}
+	
+function colorHEX(){
+	var coolor = "";
+	for(var i=0;i<6;i++){
+		coolor = coolor + generarLetra() ;
+	}
+	return "#" + coolor;
+}
+
 
 
 
@@ -42,7 +56,7 @@ function listarPositivos() {
                 
             {
 
-                $datos = $('#listarFallecidos');
+                $datos = $('#listarPositivos');
 
                 // creo la tabla y muestro los datos
 
@@ -58,11 +72,18 @@ function listarPositivos() {
                     '</table>');
 
                 // hago un ciclo
+                 var can=[];
+                 var ciudad=[];
+                 var color=[];
                 for (var i = 0; i < respuesta.length; i++) {
                     var $tr = $('<tr></tr>');
                     $tr.append('<td>' + respuesta[i].Ciudad  + '</td>');
                     $tr.append('<td>' + respuesta[i].Cantidad+ '</td>');
-                    
+                    ciudad[i]=(respuesta[i].Ciudad);
+                    can[i]=(respuesta[i].Cantidad);
+                   
+
+                    color[i]=colorHEX();
 
                     // agrego la columna tr a la tabla
                     $tabla.append($tr);
@@ -70,6 +91,27 @@ function listarPositivos() {
 
                 // agrego la tabla al div 
                 $datos.append($tabla);
+                //se crea el grafico
+                new Chart(document.getElementById("bar-chart-horizontal"), {
+                    type: 'horizontalBar',
+                    data: {
+                      labels: ciudad,
+                      datasets: [
+                        {
+                          label: "Casos Positivos",
+                          backgroundColor: color,
+                          data: can
+                        }
+                      ]
+                    },
+                    options: {
+                      legend: { display: false },
+                      title: {
+                        display: true,
+                        text: 'Reporte de Casos Positivos Por Municipio'
+                      }
+                    }
+                });
             }
 
 
@@ -90,12 +132,12 @@ function listarRecuperados(){
                 
             {
 
-                $datos = $('#listarFallecidos');
+                $datos = $('#listarRecuperados');
 
                 // creo la tabla y muestro los datos
 
 
-                $tabla = $('<table class="table table-bordered mt-4"> <thead><tr>' +
+                $tabla = $('<table class="table table-bordered "> <thead><tr>' +
                     '<th scope="col">Ciudad</th>' +
                     '<th scope="col"> Numero de Recuperados</th>'
                     + 
@@ -106,19 +148,47 @@ function listarRecuperados(){
                     '</table>');
 
                 // hago un ciclo
-                for (var i = 0; i < respuesta.length; i++) {
-                    var $tr = $('<tr></tr>');
-                    $tr.append('<td>' + respuesta[i].Ciudad  + '</td>');
-                    $tr.append('<td>' + respuesta[i].Cantidad+ '</td>');
-                    
+                var can=[];
+                var ciudad=[];
+                var color=[];
+               for (var i = 0; i < respuesta.length; i++) {
+                   var $tr = $('<tr></tr>');
+                   $tr.append('<td>' + respuesta[i].Ciudad  + '</td>');
+                   $tr.append('<td>' + respuesta[i].Cantidad+ '</td>');
+                   ciudad[i]=(respuesta[i].Ciudad);
+                   can[i]=(respuesta[i].Cantidad);
+                  
 
-                    // agrego la columna tr a la tabla
-                    $tabla.append($tr);
-                }
+                   color[i]=colorHEX();
 
-                // agrego la tabla al div 
-                $datos.append($tabla);
-            }
+                   // agrego la columna tr a la tabla
+                   $tabla.append($tr);
+               }
+
+               // agrego la tabla al div 
+               $datos.append($tabla);
+               //se crea el grafico
+               new Chart(document.getElementById("bar-chart-horizontal"), {
+                   type: 'horizontalBar',
+                   data: {
+                     labels: ciudad,
+                     datasets: [
+                       {
+                         label: "Pacientes Recuperados",
+                         backgroundColor: color,
+                         data: can
+                       }
+                     ]
+                   },
+                   options: {
+                     legend: { display: false },
+                     title: {
+                       display: true,
+                       text: 'Reporte del Numero de Recuperados Por Municipio'
+                     }
+                   }
+               });
+           }
 
 
 
@@ -154,19 +224,47 @@ function listarFallecidos() {
                     '</thead>' +
                     '</table>');
 
-                // hago un ciclo
+                 // hago un ciclo
+                 var can=[];
+                 var ciudad=[];
+                 var color=[];
                 for (var i = 0; i < respuesta.length; i++) {
                     var $tr = $('<tr></tr>');
                     $tr.append('<td>' + respuesta[i].Ciudad  + '</td>');
                     $tr.append('<td>' + respuesta[i].Cantidad+ '</td>');
-                    
-
+                    ciudad[i]=(respuesta[i].Ciudad);
+                    can[i]=(respuesta[i].Cantidad);
+                   
+ 
+                    color[i]=colorHEX();
+ 
                     // agrego la columna tr a la tabla
                     $tabla.append($tr);
                 }
-
+ 
                 // agrego la tabla al div 
                 $datos.append($tabla);
+                //se crea el grafico
+                new Chart(document.getElementById("bar-chart-horizontal"), {
+                    type: 'horizontalBar',
+                    data: {
+                      labels: ciudad,
+                      datasets: [
+                        {
+                          label: "Nro de Fallecidos",
+                          backgroundColor: color,
+                          data: can
+                        }
+                      ]
+                    },
+                    options: {
+                      legend: { display: false },
+                      title: {
+                        display: true,
+                        text: 'Reporte del Numero de Fallecidos Por Municipio'
+                      }
+                    }
+                });
             }
 
 
@@ -176,6 +274,9 @@ function listarFallecidos() {
 }
 
 function listarPositivosSx(){
+
+    
+
 
     $.ajax({
         method: "GET",
@@ -187,7 +288,7 @@ function listarPositivosSx(){
                 
             {
 
-                $datos = $('#listarFallecidos');
+                $datos = $('#listarPosex');
 
                 // creo la tabla y muestro los datos
 
@@ -203,197 +304,134 @@ function listarPositivosSx(){
                     '</table>');
 
                 // hago un ciclo
+                var can=[];
                 for (var i = 0; i < respuesta.length; i++) {
                     var $tr = $('<tr></tr>');
                     $tr.append('<td>' + respuesta[i].sexo + '</td>');
                     $tr.append('<td>' + respuesta[i].Cantidad+ '</td>');
+                   
+                    can[i]=(respuesta[i].Cantidad);
                     
 
                     // agrego la columna tr a la tabla
                     $tabla.append($tr);
                 }
 
+
                 // agrego la tabla al div 
                 $datos.append($tabla);
+                
+              
+
+
+                new Chart(document.getElementById("pie-chart"), {
+                    type: 'pie',
+                    data: {
+                      labels: ["Sexo Femenino", "Sexo Masculino"],
+                      datasets: [{
+                        label: "",
+                        backgroundColor: ["#3e95cd", "#8e5ea2"],
+                        data: can
+                      }]
+                    },
+                    options: {
+                      title: {
+                        display: true,
+                        text: 'Numero de Casos Postivos en Córdoba por Sexo'
+                      }
+                    }
+                });
             }
 
 
-
+          
         });
 
+       
+
+       
 }
 
 
-
-function borrar() {
-
-    var id_ticket = document.getElementById("inputIdentificacionRead").value;
-
-
-    $.ajax({
-        method: "DELETE",
-        url: "http://localhost/api/tickets/" + id_ticket,
-        // data: { name: "John", location: "Boston" }
-    })
-        .done(function (respuesta) {
-
-            window.alert(respuesta.success);
-            recargar();
-
-
-            //if($("#botonDesabled").removeAttr("disabled",false));
-
-        });
-
-    if ($("#botonDelete").attr("disabled", true)) {
-
-    };
-
-
-
-}
-
-
-
-
-
-function cargaEditar() {
-
-    var tiket_id = document.getElementById("inputIdentificacionRead").value;
+function listarEdades() {
 
     $.ajax({
         method: "GET",
-        url: "http://localhost/api/tickets/" + tiket_id,
-        // data: { name: "John", location: "Boston" }
+        url: "http://localhost/api/edades",
+       
     })
         .done(function (respuesta) {
 
-
-            if (respuesta.success == null) {
-
-                document.getElementById("einputDependencia").value = respuesta.id_dependencia;
-                document.getElementById("einputTipo").value = respuesta.id_tipo;
-                document.getElementById("einputNombres").value = respuesta.nombres;
-                document.getElementById("einputApellidos").value = respuesta.apellidos;
-                document.getElementById("einputEmail").value = respuesta.email;
-                document.getElementById("einputAsunto").value = respuesta.asunto;
-                document.getElementById("einputDescripcion").value = respuesta.descripcion;
-                document.getElementById("einputFecha").value = respuesta.fecha;
-
-            } else {
-
-
-                window.alert(respuesta.success);
-            }
-
-
-            // agrego la columna tr a la tabla
-
-
-
-            // agrego la tabla al div 
-
-            if ($("#botonDelete").length) {
-                if ($("#botonReadD").attr("disabled", true));
-                document.getElementById("botonDelete").style.visibility = "visible";
-                document.getElementById("botonCancel").style.visibility = "visible";
-
-            }
-
-
-
-
-        });
-    // if($("#botonRead").attr("disabled",true));
-    // if($("#botonDesabled").removeAttr("disabled",false));
-
-}
-
-
-function editar() {
-
-    var tiket_id = document.getElementById("inputIdentificacionRead").value;
-
-    var id_dependencia = document.getElementById("einputDependencia").value;
-    var id_tipo = document.getElementById("einputTipo").value;
-    var nombres = document.getElementById("einputNombres").value;
-    var apellidos = document.getElementById("einputApellidos").value;
-    var email = document.getElementById("einputEmail").value;
-    var asunto = document.getElementById("einputAsunto").value;
-    var descripcion = document.getElementById("einputDescripcion").value;
-    var fecha = document.getElementById("einputFecha").value;
-
-
-    $.ajax({
-        method: "PATCH",
-        url: "http://localhost/api/tickets/" + tiket_id + "?id_dependencia=" + id_dependencia +
-            "&id_tipo=" + id_tipo + "&nombres=" + nombres + " &apellidos=" + apellidos + "&email=" + email +
-            "&asunto=" + asunto + "&descripcion=" + descripcion + "&fecha=" + fecha,
-
-
-    })
-
-        .done(function (msg) {
-            //  if($("#botonCreate").attr("disabled",true));
-            // location.reload();
-        });
-
-}
-
-
-
-
-function buscar() {
-
-    var dato = document.getElementById("inputSearchFiltro").value;
-
-    var id = document.getElementById("inputIdSearch").value;
-
-    $.ajax({
-        method: "OPTIONS",
-        url: "http://localhost/api/tickets/" + id + "?dato=" + dato,
-    })
-        .done(function (respuesta) {
-
-
+                
             {
 
-                $datos = $('#listarTodos');
+                $datos = $('#listarEdades');
 
                 // creo la tabla y muestro los datos
 
 
                 $tabla = $('<table class="table table-bordered mt-4"> <thead><tr>' +
-                    '<th scope="col">Id</th>' +
-                    '<th scope="col">Dependencia</th>'
-                    + '<th scope="col">Tipo</th>' +
-                    '<th scope="col">Nombres</th>' +
-                    '<th scope="col">Apellidos</th>' +
-                    '<th scope="col">Email</th>' +
-                    '<th scope="col">Asunto</th>' +
-                    '<th scope="col">Descripcion</th>' +
-                    '<th scope="col">Fecha</th>' +
+                    '<th scope="col">Rango de Edad</th>' +
+                    '<th scope="col"> Numero de Fallecidos</th>'
+                    + 
 
 
                     '</tr>' +
                     '</thead>' +
                     '</table>');
+                    
 
                 // hago un ciclo
-                for (var i = 0; i < respuesta.length; i++) {
-                    var $tr = $('<tr></tr>');
-                    $tr.append('<td>' + respuesta[i].id + '</td>');
-                    $tr.append('<td>' + respuesta[i].nombre_dependencia + '</td>');
-                    $tr.append('<td>' + respuesta[i].nombre_tipo + '</td>');
-                    $tr.append('<td>' + respuesta[i].nombres + '</td>');
-                    $tr.append('<td>' + respuesta[i].apellidos + '</td>');
-                    $tr.append('<td>' + respuesta[i].email + '</td>');
-                    $tr.append('<td>' + respuesta[i].asunto + '</td>');
-                    $tr.append('<td>' + respuesta[i].descripcion + '</td>');
-                    $tr.append('<td>' + respuesta[i].fecha + '</td>');
 
-                    // agrego la columna tr a la tabla
-                    $tabla.append($tr);
+                 var can=[];
+                 var  mEdad=[];
+                 var color=[];
+
+                for (var i = 0; i < respuesta.length; i++) {
+                    var rest;
+                    if(respuesta[i].edadmax>90){
+                        var $tr = $('<tr></tr>');
+                        $tr.append('<td>' + respuesta[i].edadmin +' Años en adelante'+ '</td>');
+                        $tr.append('<td>' + respuesta[i].Cantidad+ '</td>');
+                        can[i]=respuesta[i].Cantidad;
+                        color[i]=colorHEX();
+                        // agrego la columna tr a la tabla
+                        $tabla.append($tr);
+                        mEdad[i]='Mayores de'+' '+respuesta[i].edadmin;
+                    }else{
+
+                        var $tr = $('<tr></tr>');
+                        $tr.append('<td>' + respuesta[i].edadmin +' - '+respuesta[i].edadmax+' Años'+ '</td>');
+                        $tr.append('<td>' + respuesta[i].Cantidad+ '</td>');
+                        can[i]=respuesta[i].Cantidad;
+                        color[i]=colorHEX();
+      
+                        mEdad[i]=respuesta[i].edadmin +' - '+respuesta[i].edadmax;
+                        // agrego la columna tr a la tabla
+                        $tabla.append($tr);
+
+                        new Chart(document.getElementById("polar-chart"), {
+                            type: 'doughnut',
+                            data: {
+                              labels: mEdad,
+                              datasets: [
+                                {
+                                  label: "Edad",
+                                  backgroundColor: color,
+                                  data: can
+                                }
+                              ]
+                            },
+                            options: {
+                              title: {
+                                display: true,
+                                text: 'Reporte por Edad en años'
+                              }
+                            }
+                        });
+                        
+                    }
+                   
                 }
 
                 // agrego la tabla al div 
@@ -402,28 +440,7 @@ function buscar() {
 
 
 
-
-
         });
-    if ($("#botonRead").attr("disabled", true));
-    if ($("#botonDesabled").removeAttr("disabled", false));
-}
-
-function recargar() {
-
-
-    location.reload();
 
 }
 
-
-
-
-$(document).ready(function () {
-    if ($("#botonDelete").length) {
-        (document.getElementById("botonDelete").style.visibility = "hidden");
-        (document.getElementById("botonCancel").style.visibility = "hidden");
-    }
-
-
-});
